@@ -5,11 +5,12 @@ all:src/blur_linear.c src/blur_process.c src/blur_threads.c
 	gcc -omain2 src/blur_threads.c src/imageprocessing.c src/blur.c -lfreeimage -lpthread	
 
 test:all
-	number=1 ;
 	echo "Rodando testes..."
 	chmod +x test.sh
-	./test.sh
-		
+	./test.sh	
 	echo "Pronto!"
 	
 	python3 histogram.py
+
+clean:
+	rm main*

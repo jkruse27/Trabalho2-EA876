@@ -5,7 +5,7 @@
 #include <time.h>
 #include <pthread.h>
 
-#define N 17
+#define N 3
 
 // Struct para guardar apenas 1 cor e a largura e altura dela
 typedef struct argument{
@@ -21,15 +21,12 @@ void *worker(void *arg){
 }
 
 
-int main(){
+int main(int argc, char *argv[]){
 	pthread_t r, g, b;
 	void *new_r, *new_g, *new_b;
 	
-	char str[40];
-	scanf("%s", str);
-
 	// Abre a imagem
-	imagem I = abrir_imagem(str);
+	imagem I = abrir_imagem(argv[1]);
 
 	// Cria as srtucts de argumento para cada thread
 	argument r_arg, g_arg, b_arg;

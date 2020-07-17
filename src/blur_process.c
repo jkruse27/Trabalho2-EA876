@@ -7,19 +7,17 @@
 #include <sys/mman.h>
 #include <pthread.h>
 
+#define N 3
 
-int main() {
+int main(int argc, char *argv[]) {
 	
 	int protection = PROT_READ | PROT_WRITE;
         int visibility = MAP_SHARED | MAP_ANON;
 	imagem *I;
 	imagem i;
-	char str[40];
-	
-	scanf("%s", str);
 	
 	I = (imagem*) mmap(NULL, sizeof(imagem), protection, visibility, 0, 0);
-	*I = abrir_imagem(str);
+	*I = abrir_imagem(argv[1]);
 	
 	i.r = (float*) mmap(NULL, sizeof(float)*((*I).width*(*I).height), protection, visibility, 0, 0);
 	i.g = (float*) mmap(NULL, sizeof(float)*((*I).width*(*I).height), protection, visibility, 0, 0);
@@ -34,13 +32,13 @@ int main() {
 		pid[2] = fork();
 	
 	if(pid[0] == 0) {
-		blur((*I).r, (*I).width, (*I).height, 17, i.r);
+		blur((*I).r, (*I).width, (*I).height, N, i.r);
 	}
 	if(pid[1] == 0) {
-		blur((*I).g, (*I).width, (*I).height, 17, i.g);
+		blur((*I).g, (*I).width, (*I).height, N, i.g);
 	}
 	if(pid[2] == 0) {
-		blur((*I).b, (*I).width, (*I).height, 17, i.b);
+		blur((*I).b, (*I).width, (*I).height, N, i.b);
 	}
 	
 	if(pid[0] != 0 && pid[1] != 0 && pid[2] != 0) {
