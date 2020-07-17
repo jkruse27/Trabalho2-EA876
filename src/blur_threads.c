@@ -59,7 +59,7 @@ int main(int argc, char *argv[]){
 	I.b = (float *) new_b;
 	
 	// Salva a imagem e libera ela
-	salvar_imagem("../saìda/blur_linear.jpg", &I);
+	salvar_imagem("saída/blur_thread.jpg", &I);
 	liberar_imagem(&I);
 	
 	return 0;
