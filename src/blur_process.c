@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
         	i.width = (*I).width;
         	i.height = (*I).height;
         	liberar_imagem(&I[0]);
-		salvar_imagem("saída/blur_process.jpg", &i);
+		salvar_imagem(argv[2], &i);
 
 		return 0;
 	}
