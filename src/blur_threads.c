@@ -9,15 +9,15 @@
 
 // Struct para guardar apenas 1 cor e a largura e altura dela
 typedef struct argument{
-	float *color;
+	float *color, *d;
 	int width, height;
 } argument;
 
 void *worker(void *arg){
 	argument *real_arg = (argument *) arg; 						// Faz um cast para o tipo original
-	blur(real_arg->color, real_arg->width, real_arg->height, N, real_arg->color); 	// Realiza o blur
+	blur(real_arg->color, real_arg->width, real_arg->height, N, real_arg->d); 	// Realiza o blur
 	
-	return (void *) real_arg->color; 				// Retorna o novo vetor com o blur aplicado
+	return (void *) real_arg->d; 				// Retorna o novo vetor com o blur aplicado
 }
 
 
@@ -32,14 +32,17 @@ int main(int argc, char *argv[]){
 	argument r_arg, g_arg, b_arg;
 	
 	r_arg.color = I.r;
+	r_arg.d = malloc(sizeof(float)*I.width*I.height);
 	r_arg.width = I.width;
 	r_arg.height = I.height;
 	
 	g_arg.color = I.g;
+	g_arg.d = malloc(sizeof(float)*I.width*I.height);
 	g_arg.width = I.width;
 	g_arg.height = I.height;
 
 	b_arg.color = I.b;
+	b_arg.d = malloc(sizeof(float)*I.width*I.height);
 	b_arg.width = I.width;
 	b_arg.height = I.height;
 	
@@ -60,6 +63,9 @@ int main(int argc, char *argv[]){
 	
 	// Salva a imagem e libera ela
 	salvar_imagem(argv[2], &I);
+	free(r_arg.d);
+	free(g_arg.d);
+	free(b_arg.d);
 	liberar_imagem(&I);
 	
 	return 0;
