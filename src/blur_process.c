@@ -7,7 +7,7 @@
 #include <sys/mman.h>
 #include <pthread.h>
 
-#define N 3
+#define N 7
 
 int main(int argc, char *argv[]) {
 	

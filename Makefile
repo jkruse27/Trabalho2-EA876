@@ -13,11 +13,15 @@ DIR = src
 TEST = test.sh
 HIST = histogram.py
 PY = python3.7
+RUN = run.sh
 
 all:src/blur_linear.c src/blur_process.c src/blur_threads.c
 	$(CC) -o$(LTARGET) $(LFILE) $(DEP) $(CFLAGS)
 	$(CC) -o$(TTARGET) $(TFILE) $(DEP) $(CFLAGS) $(EFLAGS)
 	$(CC) -o$(PTARGET) $(PFILE) $(DEP) $(CFLAGS) $(EFLAGS)
+
+run:all
+	./$(RUN)	
 
 test:all
 	echo "Rodando testes..."

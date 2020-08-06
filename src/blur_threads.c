@@ -5,19 +5,20 @@
 #include <time.h>
 #include <pthread.h>
 
-#define N 3
+#define N 7
 
 // Struct para guardar apenas 1 cor e a largura e altura dela
 typedef struct argument{
-	float *color, *d;
+	float *color;
 	int width, height;
 } argument;
 
 void *worker(void *arg){
 	argument *real_arg = (argument *) arg; 						// Faz um cast para o tipo original
-	blur(real_arg->color, real_arg->width, real_arg->height, N, real_arg->d); 	// Realiza o blur
-	
-	return (void *) real_arg->d; 				// Retorna o novo vetor com o blur aplicado
+	float *v = malloc(sizeof(float)*real_arg->width*real_arg->height);		// Cria um novo vetor para salvar a imagem com blur
+	blur(real_arg->color, real_arg->width, real_arg->height, N, v); 		// Realiza o blur
+	real_arg->color = v;
+	return (void *) real_arg->color; 				// Retorna o novo vetor com o blur aplicado
 }
 
 
@@ -32,17 +33,14 @@ int main(int argc, char *argv[]){
 	argument r_arg, g_arg, b_arg;
 	
 	r_arg.color = I.r;
-	r_arg.d = malloc(sizeof(float)*I.width*I.height);
 	r_arg.width = I.width;
 	r_arg.height = I.height;
 	
 	g_arg.color = I.g;
-	g_arg.d = malloc(sizeof(float)*I.width*I.height);
 	g_arg.width = I.width;
 	g_arg.height = I.height;
 
 	b_arg.color = I.b;
-	b_arg.d = malloc(sizeof(float)*I.width*I.height);
 	b_arg.width = I.width;
 	b_arg.height = I.height;
 	
@@ -56,6 +54,8 @@ int main(int argc, char *argv[]){
 	pthread_join(g, &new_g);
 	pthread_join(b, &new_b);
 
+	liberar_imagem(&I);
+	
 	// Atualiza a imagem com os novos valores com blur
 	I.r = (float *) new_r;
 	I.g = (float *) new_g;
@@ -63,9 +63,7 @@ int main(int argc, char *argv[]){
 	
 	// Salva a imagem e libera ela
 	salvar_imagem(argv[2], &I);
-	free(r_arg.d);
-	free(g_arg.d);
-	free(b_arg.d);
+	
 	liberar_imagem(&I);
 	
 	return 0;
