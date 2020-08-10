@@ -2,33 +2,51 @@
 #include "imageprocessing.h"
 #include "blur.h"
 #include <stdlib.h>
+#include "cronometro.h"
 
-#define N 7
+#define N 15
 
-int main(int argc, char *argv[]) {
-	
+// Struct
+typedef struct arg{
 	imagem I;
-	
-	I = abrir_imagem(argv[1]);
-
 	float *r, *g, *b;
-	r = malloc(I.width*I.height*(sizeof(float)));
-	g = malloc(I.width*I.height*(sizeof(float)));
-	b = malloc(I.width*I.height*(sizeof(float)));
-		
+}arg;
+
+// Funcao que implementa blur
+void *medir_main(void *args){
+	imagem I = ((arg *) args)->I;
+	float *r = ((arg *) args)->r;
+	float *g = ((arg *) args)->g;
+	float *b = ((arg *) args)->b;
+	
+	// Aplica o blur salvando nos canais alocados acima
 	blur(I.r, I.width, I.height, N, r);
 	blur(I.g, I.width, I.height, N, g);
 	blur(I.b, I.width, I.height, N, b);
 	
-	liberar_imagem(&I);
-	
-	I.r = r;
-	I.g = g;
-	I.b = b;
+	return NULL;
+}
 
-	salvar_imagem(argv[2], &I);
-	liberar_imagem(&I);
+int main(int argc, char *argv[]){
+	arg arg;
 	
+	arg.I = abrir_imagem(argv[1]); // Abre imagem
+
+	arg.r = malloc((arg.I).width*(arg.I).height*(sizeof(float)));
+	arg.g = malloc((arg.I).width*(arg.I).height*(sizeof(float)));
+	arg.b = malloc((arg.I).width*(arg.I).height*(sizeof(float)));
+		
+
+	medir_tempo(medir_main, &arg);
+	
+	liberar_imagem(&(arg.I));
+	
+	(arg.I).r = arg.r;
+	(arg.I).g = arg.g;
+	(arg.I).b = arg.b;
+	
+	// Salva imagem com blur
+	salvar_imagem(argv[2], &(arg.I));
+	liberar_imagem(&(arg.I));
 	return 0;
-	
 }

@@ -6,23 +6,24 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <pthread.h>
+#include "cronometro.h"
 
-#define N 7
+#define N 15
 
-int main(int argc, char *argv[]) {
-	
-	int protection = PROT_READ | PROT_WRITE;
-        int visibility = MAP_SHARED | MAP_ANON;
+
+// Struct para os argumentos da funcao medir_main
+typedef struct arg{
 	imagem *I;
-	imagem i;
-	
-	I = (imagem*) mmap(NULL, sizeof(imagem), protection, visibility, 0, 0);
-	*I = abrir_imagem(argv[1]);
-	
-	i.r = (float*) mmap(NULL, sizeof(float)*((*I).width*(*I).height), protection, visibility, 0, 0);
-	i.g = (float*) mmap(NULL, sizeof(float)*((*I).width*(*I).height), protection, visibility, 0, 0);
-	i.b = (float*) mmap(NULL, sizeof(float)*((*I).width*(*I).height), protection, visibility, 0, 0);
-	
+	float *r, *g, *b;
+	int width , height;
+} arg;
+
+void *medir_main(void *args){
+	imagem *I = ((arg *) args)->I;
+	float *r = ((arg *) args)->r;
+	float *g = ((arg *) args)->g;
+	float *b = ((arg *) args)->b;
+
 	pid_t pid[3] = {-1, -1, -1};
 	
 	pid[0] = fork();
@@ -32,25 +33,49 @@ int main(int argc, char *argv[]) {
 		pid[2] = fork();
 	
 	if(pid[0] == 0) {
-		blur((*I).r, (*I).width, (*I).height, N, i.r);
+		blur((*I).r, (*I).width, (*I).height, N, r);
 	}
 	if(pid[1] == 0) {
-		blur((*I).g, (*I).width, (*I).height, N, i.g);
+		blur((*I).g, (*I).width, (*I).height, N, g);
 	}
 	if(pid[2] == 0) {
-		blur((*I).b, (*I).width, (*I).height, N, i.b);
+		blur((*I).b, (*I).width, (*I).height, N, b);
 	}
 	
 	if(pid[0] != 0 && pid[1] != 0 && pid[2] != 0) {
 		waitpid(pid[0], NULL, 0);
         	waitpid(pid[1], NULL, 0);
         	waitpid(pid[2], NULL, 0);
-        	i.width = (*I).width;
-        	i.height = (*I).height;
-        	liberar_imagem(&I[0]);
-		salvar_imagem(argv[2], &i);
 
-		return 0;
+		return NULL;
 	}
 	
+}
+
+int main(int argc, char *argv[]){
+	int protection = PROT_READ | PROT_WRITE;
+        int visibility = MAP_SHARED | MAP_ANON;
+	
+	imagem *I;
+	
+	I = (imagem*) mmap(NULL, sizeof(imagem), protection, visibility, 0, 0);
+	*I = abrir_imagem(argv[1]);
+	
+	arg arg;
+	arg.I = I;
+
+	// Alocando os canais compartilhados entre os processos
+	arg.r = (float*) mmap(NULL, sizeof(float)*((*I).width*(*I).height), protection, visibility, 0, 0);
+	arg.g = (float*) mmap(NULL, sizeof(float)*((*I).width*(*I).height), protection, visibility, 0, 0);
+	arg.b = (float*) mmap(NULL, sizeof(float)*((*I).width*(*I).height), protection, visibility, 0, 0);
+	
+	medir_tempo(medir_main, &arg);
+        
+	I->r = arg.r;
+	I->g = arg.g;
+	I->b = arg.b;
+
+	salvar_imagem(argv[2], &(*I));
+
+	return 0;
 }

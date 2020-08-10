@@ -1,18 +1,18 @@
 #!/bin/bash
 
-IMGS=images/*
+IMGS=data/*
 LIN=linear
 PRO=process
 THR=threads
-end=100
+end=20
 
 for img in $IMGS
 do
 	for (( i=0; i<=end; i++ )) do
 		echo $img $i
-		new=${img/images\//}
-		TIMEFORMAT='%3U'; (time ./$LIN $img saída/${new/.jpg/_linear.jpg}  > /dev/null)  |& tee -a ${new/.jpg/_linear.txt}  > /dev/null
-		TIMEFORMAT='%3U'; (time ./$THR $img saída/${new/.jpg/_thread.jpg}  > /dev/null)  |& tee -a ${new/.jpg/_thread.txt}  > /dev/null
-		TIMEFORMAT='%3U'; (time ./$PRO $img saída/${new/.jpg/_process.jpg} > /dev/null)  |& tee -a ${new/.jpg/_process.txt} > /dev/null
+		new=${img/data\//}
+		./$LIN $img saída/${new/.jpg/_linear.jpg}  |& tee -a ${new/.jpg/_linear.txt}  > /dev/null
+		./$THR $img saída/${new/.jpg/_thread.jpg}  |& tee -a ${new/.jpg/_thread.txt}  > /dev/null
+		./$PRO $img saída/${new/.jpg/_process.jpg} |& tee -a ${new/.jpg/_process.txt} > /dev/null
 	done
 done
