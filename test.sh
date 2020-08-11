@@ -4,7 +4,7 @@ IMGS=data/*
 LIN=linear
 PRO=process
 THR=threads
-end=300
+end=100
 
 for img in $IMGS
 do
