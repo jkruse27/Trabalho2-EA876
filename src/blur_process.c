@@ -8,7 +8,7 @@
 #include <pthread.h>
 #include "cronometro.h"
 
-#define N 15
+#define N 5
 
 
 // Struct para os argumentos da funcao medir_main

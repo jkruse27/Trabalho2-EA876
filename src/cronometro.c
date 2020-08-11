@@ -17,8 +17,10 @@ void medir_tempo(void *(*funcao)(void *args), void *args) {
 
   timersub(&rt1, &rt0, &drt);
 
-  //printf("Tempo real: %ld.%06ld segundos\n", drt.tv_sec, drt.tv_usec);
-  printf("%f\n", (double)(ct1-ct0)/CLOCKS_PER_SEC);
+  // Real
+  printf("%ld.%06ld\n", drt.tv_sec, drt.tv_usec);
+  // Usr
+  //printf("%f\n", (double)(ct1-ct0)/CLOCKS_PER_SEC);
 }
 
 

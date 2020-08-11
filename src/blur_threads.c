@@ -6,7 +6,7 @@
 #include <pthread.h>
 #include "cronometro.h"
 
-#define N 15
+#define N 5
 
 // Struct para guardar apenas 1 cor e a largura e altura dela
 typedef struct argument{

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "cronometro.h"
 
-#define N 15
+#define N 5
 
 // Struct
 typedef struct arg{
