@@ -19,6 +19,7 @@ typedef struct arg{
 } arg;
 
 void *medir_main(void *args){
+	// Faz cast dos argumentos para tipos originais
 	imagem *I = ((arg *) args)->I;
 	float *r = ((arg *) args)->r;
 	float *g = ((arg *) args)->g;
@@ -31,7 +32,7 @@ void *medir_main(void *args){
 		pid[1] = fork();
 	if(pid[0] != 0 && pid[1] != 0)
 		pid[2] = fork();
-	
+	// Cada process fica responsavel por um canal	
 	if(pid[0] == 0) {
 		blur((*I).r, (*I).width, (*I).height, N, r);
 	}
@@ -43,6 +44,7 @@ void *medir_main(void *args){
 	}
 	
 	if(pid[0] != 0 && pid[1] != 0 && pid[2] != 0) {
+		// Espera cada processo acabar
 		waitpid(pid[0], NULL, 0);
         	waitpid(pid[1], NULL, 0);
         	waitpid(pid[2], NULL, 0);
